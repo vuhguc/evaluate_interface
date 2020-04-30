@@ -217,7 +217,7 @@ def run_evaluate(data):
 	]
 	clustering_names = df.columns.values[2:].tolist()
 	if os.path.isfile('evaluation_tables/' + data.filename + '_evaluation_table.csv'):
-		evaluation_table = pd.read_csv('evaluation_tables/' + data.filename + '_evaluation_table.csv')
+		evaluation_table = pd.read_csv('evaluation_tables/' + data.filename + '_evaluation_table.csv', index_col=0)
 		evaluation_data = evaluation_table.values.tolist()
 		for row in evaluation_data:
 			evaluation_data = evaluation_data[1:]
