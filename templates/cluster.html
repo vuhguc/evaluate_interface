@@ -1,0 +1,220 @@
+$def with (status_message, data, validator)
+
+<style>
+.tooltip-inner {
+  max-width: 320px;
+  width: inherit;
+}
+</style>
+
+$:global_render.header("Perform Clustering", "Perform Hierarchical Clustering on data given in the uploaded csv file.", "cluster", status_message)
+<div class="container">
+  <div class="row">
+    <div class="col-sm-6">
+      <h2>Instructions</h2>
+      <ul class="list-unstyled">
+        <li>1. Upload a csv data file on which Hierarchical Clustering is performed.</li>
+        <li>2. Edit custom parameters used in Hierarchical Clustering.</li>
+        <li>3. Click submit button.</li>
+      </ul>
+      <h4>Notes</h4>
+      <ul class="list-unstyled">
+        <li>Example of an input csv file:</li>
+        <img src="/static/SampleClusterInput.png" class="img-fluid" alt="Sample Cluster Input">
+      </ul>
+    </div>
+    <div class="col-sm-6">
+      <h2>Input</h2>
+      <form method="POST" enctype="multipart/form-data">
+        <div class="form-group row">
+          <div class="col-sm-4">
+            <label for="inputFile" class="col-form-label">Upload file</label>
+            <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" data-container="body" title="The input csv file should have 4 columns, respectively containing ids, titles, contents, and human annotations of the data. The data will be clustered based on contents (3rd column) and evaluated based on human annotations (4th column). Human annotations can be in any forms of text."><i class="fas fa-question-circle"></i></a>
+          </div>
+          <div class="col-sm-8">
+            $if validator is not None and not validator['file']:
+                <input type="file" class="form-control-file is-invalid" accept=".csv" id="inputFile" name="file">
+            $else:
+                <input type="file" class="form-control-file" accept=".csv" id="inputFile" name="file">
+            <div class="invalid-feedback">
+              Invalid.
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-4">
+            <label for="inputNumClusters" class="col-form-label">Number of clusters</label>
+            <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" data-container="body" title="Number of clusters is the number of output clusters produced by Hierarchical Clustering. This value can be automatically selected (using the elbow method) or manually selected by entering a positive integer."><i class="fas fa-question-circle"></i></a>
+          </div>
+          <div class="col-sm-2">
+            $if data is not None and data.auto_select_num_clusters == 'False':
+                <input type="radio" class="form-check-input" id="inputAutoSelectNumClusters" name="auto_select_num_clusters" value="True" onclick="toggleInputNumClusters()">
+            $else:
+                <input type="radio" class="form-check-input" id="inputAutoSelectNumClusters" name="auto_select_num_clusters" value="True" checked onclick="toggleInputNumClusters()">
+            <label for="inputAutoSelectNumClusters" class="form-check-label">Auto</label>
+          </div>
+          <div class="col-sm-2">
+            $if data is not None and data.auto_select_num_clusters == 'False':
+                <input type="radio" class="form-check-input" id="inputManualSelectNumClusters" name="auto_select_num_clusters" value="False" checked onclick="toggleInputNumClusters()">
+            $else:
+                <input type="radio" class="form-check-input" id="inputManualSelectNumClusters" name="auto_select_num_clusters" value="False" onclick="toggleInputNumClusters()">
+            <label for="inputManualSelectNumClusters" class="form-check-label">Manual</label>
+          </div>
+          <div class="col-sm-3">
+            $if data is not None and data.auto_select_num_clusters == 'False':
+                $if validator['num_clusters']:
+                    <input type="text" class="form-control is-valid" id="inputNumClusters" name="num_clusters" value="$data.num_clusters">
+                $else:
+                    <input type="text" class="form-control is-invalid" id="inputNumClusters" name="num_clusters" value="$data.num_clusters">
+            $else:
+                <input type="text" class="form-control" id="inputNumClusters" name="num_clusters" disabled>
+            <div class="invalid-feedback">
+              Invalid.
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-4">
+            <label for="inputMaxFeatures" class="col-form-label">Max features</label>
+            <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" data-container="body" title="Build a vocabulary that only consider the top max features ordered by term frequency across the corpus."><i class="fas fa-question-circle"></i></a>
+          </div>
+          <div class="col-sm-3">
+            $if data is not None:
+                $if validator['max_features']:
+                    <input type="text" class="form-control is-valid" id="inputMaxFeatures" name="max_features" value="$data.max_features">
+                $else:
+                    <input type="text" class="form-control is-invalid" id="inputMaxFeatures" name="max_features" value="$data.max_features">
+            $else:
+                <input type="text" class="form-control" id="inputMaxFeatures" name="max_features" value="200000">
+            <div class="invalid-feedback">
+              Invalid.
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-4">
+            <label for="inputMinDF" class="col-form-label">Min DF</label>
+            <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" data-container="body" title="When building the vocabulary ignore terms that have a document frequency strictly lower than min DF."><i class="fas fa-question-circle"></i></a>
+          </div>
+          <div class="col-sm-3">
+            $if data is not None:
+                $if validator['min_df']:
+                    <input type="text" class="form-control is-valid" id="inputMinDF" name="min_df" value="$data.min_df">
+                $else:
+                    <input type="text" class="form-control is-invalid" id="inputMinDF" name="min_df" value="$data.min_df">
+            $else:
+                <input type="text" class="form-control" id="inputMinDF" name="min_df" value="0.2">
+            <div class="invalid-feedback">
+              Invalid.
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-4">
+            <label for="inputMaxDF" class="col-form-label">Max DF</label>
+            <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" data-container="body" title="When building the vocabulary ignore terms that have a document frequency strictly higher than max DF."><i class="fas fa-question-circle"></i></a>
+          </div>
+          <div class="col-sm-3">
+            $if data is not None:
+                $if validator['max_df']:
+                    <input type="text" class="form-control is-valid" id="inputMaxDF" name="max_df" value="$data.max_df">
+                $else:
+                    <input type="text" class="form-control is-invalid" id="inputMaxDF" name="max_df" value="$data.max_df">
+            $else:
+                <input type="text" class="form-control" id="inputMaxDF" name="max_df" value="0.8">
+            <div class="invalid-feedback">
+              Invalid.
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-4">
+            <label class="col-form-label">Use IDF</label>
+            <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" data-container="body" title="Enable inverse-document-frequency reweighting."><i class="fas fa-question-circle"></i></a>
+          </div>
+          <div class="col-sm-2">
+            $if data is not None and data.use_idf == 'False':
+                <input type="radio" class="form-check-input" id="inputUseIDFTrue" name="use_idf" value="True">
+            $else:
+                <input type="radio" class="form-check-input" id="inputUseIDFTrue" name="use_idf" value="True" checked>
+            <label for="inputUseIDFTrue" class="form-check-label">True</label>
+          </div>
+          <div class="col-sm-2">
+            $if data is not None and data.use_idf == 'False':
+                <input type="radio" class="form-check-input" id="inputUseIDFFalse" name="use_idf" value="False" checked>
+            $else:
+                <input type="radio" class="form-check-input" id="inputUseIDFFalse" name="use_idf" value="False">
+            <label for="inputUseIDFFalse" class="form-check-label">False</label>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-4">
+            <label for="inputMinNgram" class="col-form-label">Min n-gram size</label>
+            <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" data-container="body" title="The lower boundary of the range of n-values for different n-grams to be extracted. All values of n such that min n-gram size <= n <= max n-gam size will be used."><i class="fas fa-question-circle"></i></a>
+          </div>
+          <div class="col-sm-3">
+            $if data is not None:
+                $if validator['min_ngram']:
+                    <input type="text" class="form-control is-valid" id="inputMinNgram" name="min_ngram" value="$data.min_ngram">
+                $else:
+                    <input type="text" class="form-control is-invalid" id="inputMinNgram" name="min_ngram" value="$data.min_ngram">
+            $else:
+                <input type="text" class="form-control" id="inputMinNgram" name="min_ngram" value="1">
+            <div class="invalid-feedback">
+              Invalid.
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-4">
+            <label for="inputMaxNgram" class="col-form-label">Max n-gram size</label>
+            <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" data-container="body" title="The upper boundary of the range of n-values for different n-grams to be extracted. All values of n such that min n-gram size <= n <= max n-gram size will be used."><i class="fas fa-question-circle"></i></a>
+          </div>
+          <div class="col-sm-3">
+            $if data is not None:
+                $if validator['max_ngram']:
+                    <input type="text" class="form-control is-valid" id="inputMaxNgram" name="max_ngram" value="$data.max_ngram">
+                $else:
+                    <input type="text" class="form-control is-invalid" id="inputMaxNgram" name="max_ngram" value="$data.max_ngram">
+            $else:
+                <input type="text" class="form-control" id="inputMaxNgram" name="max_ngram" value="3">
+            <div class="invalid-feedback">
+              Invalid.
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" onclick="defaultInputs()" class="btn btn-primary">Default</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+$$(document).ready(function(){
+  $$('[data-toggle="tooltip"]').tooltip();
+});
+
+function toggleInputNumClusters() {
+  if(document.getElementById("inputAutoSelectNumClusters").checked) {
+    document.getElementById("inputNumClusters").disabled = true;
+    document.getElementById("inputNumClusters").value = "";
+  }
+  else if(document.getElementById("inputManualSelectNumClusters").checked) {
+    document.getElementById("inputNumClusters").disabled = false;
+  }
+}
+
+function defaultInputs() {
+  document.getElementById("inputAutoSelectNumClusters").checked = true;
+  document.getElementById("inputManualSelectNumClusters").checked = false;
+  toggleInputNumClusters();
+  document.getElementById("inputMaxFeatures").value = "200000";
+  document.getElementById("inputMinDF").value = "0.2";
+  document.getElementById("inputMaxDF").value = "0.8";
+  document.getElementById("inputUseIDFTrue").checked = true;
+  document.getElementById("inputUseIDFFalse").checked = false;
+  document.getElementById("inputMinNgram").value = "1";
+  document.getElementById("inputMaxNgram").value = "3";
+}
+</script>

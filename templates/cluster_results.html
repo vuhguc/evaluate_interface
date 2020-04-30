@@ -1,0 +1,66 @@
+$def with (status_message, auto_select_num_clusters, num_clusters, clustering_table, dendrogram_path, evaluation_table, evaluation_row_tooltips)
+
+$def render_table(table, row_tooltips):
+    <table class="table table-responsive table-bordered">
+      <thead>
+        <tr>
+          <th>$table.index.name</th>
+          $for column_id in range(len(table.columns)):
+              <th scope="col">
+                $table.columns.values[column_id]
+              </th>
+        </tr>
+      </thead>
+      <tbody>
+        $for row_id in range(len(table.index)):
+            <tr>
+              <th scope="row">
+                $table.index.values[row_id]
+                $if row_tooltips is not None:
+                    <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" data-container="body" title="$:row_tooltips[row_id].replace('\n', '<br>')"><i class="fas fa-question-circle"></i></a>
+              </th>
+              $for column_id in range(len(table.columns)):
+                  <td>$table.iloc[row_id, column_id]</td>
+            </tr>
+      </tbody>
+    </table>
+
+<style>
+.tooltip-inner {
+  max-width: 320px;
+  width: inherit;
+}
+</style>
+
+$:global_render.header("Perform Clustering", "Perform Hierarchical Clustering on data given in the uploaded csv file.", "cluster", status_message)
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1>Results</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4">
+      <h2>Clustering</h2>
+      $if auto_select_num_clusters:
+          <h5>Number of clusters: $num_clusters (Auto)</h5>
+      $else:
+          <h5>Number of clusters: $num_clusters (Manual)</h5>
+      $:render_table(clustering_table, None)
+    </div>
+    <div class="col-sm-4">
+      <h2>Dendrogram</h2>
+      <img src="$dendrogram_path" class="img-fluid" alt="Dendrogram">
+    </div>
+    <div class="col-sm-4">
+      <h2>Evaluation</h2>
+      $:render_table(evaluation_table, evaluation_row_tooltips)
+    </div>
+  </div>
+</div>
+
+<script>
+$$(document).ready(function(){
+  $$('[data-toggle="tooltip"]').tooltip();   
+});
+</script>
