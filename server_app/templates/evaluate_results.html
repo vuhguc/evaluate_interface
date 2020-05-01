@@ -65,13 +65,13 @@ $:global_render.header("Evaluate Clusterings", "Evaluate clusterings given in th
         <select class="form-control" onchange="changeImage()" id="visualizationDropdown">
           $for idx in range(len(evaluation_function_names)):
               $if evaluation_function_names[idx] == 'Adjusted Rand Index':
-                  <option value="$visualization_paths[idx]" selected>$evaluation_function_names[idx]</option>
+                  <option value="evaluate_interface/$visualization_paths[idx]" selected>$evaluation_function_names[idx]</option>
               $else:
-                  <option value="$visualization_paths[idx]">$evaluation_function_names[idx]</option>
+                  <option value="evaluate_interface/$visualization_paths[idx]">$evaluation_function_names[idx]</option>
         </select>
       </div>
       $if evaluation_function_names is not None:
-          <img src="$visualization_paths[0]" class="img-fluid" alt="$evaluation_function_names[0]" id="visualizationImage">
+          <img src="evaluate_interface/$visualization_paths[0]" class="img-fluid" alt="$evaluation_function_names[0]" id="visualizationImage">
     </div>
   </div>
 </div>
