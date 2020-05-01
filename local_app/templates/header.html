@@ -1,0 +1,20 @@
+$def with (header, description, active_nav, status_message)
+
+$if status_message is not None:
+    $if status_message['status'] == 'success':
+        <div class="alert alert-success alert-dismissible fade show">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          <strong>Success!</strong> <br> $:status_message['message'].replace('\n', '<br>')
+        </div>
+    $elif status_message['status'] == 'failure':
+        <div class="alert alert-danger alert-dismissible fade show">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          <strong>Failure!</strong> <br> $:status_message['message'].replace('\n', '<br>')
+        </div>
+<div class="jumbotron">
+  <div class="container">
+    <h1 class="display-3">$header</h1>
+    $if description is not None:
+        <p>$description</p>
+  </div>
+</div>
