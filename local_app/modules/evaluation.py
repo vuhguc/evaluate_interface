@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import sklearn
+import sklearn.metrics.cluster as skclu
 
 def purity(human_label, machine_label):
 
@@ -102,7 +102,7 @@ def rand_index(human_label, machine_label):
 
 def adjusted_rand_index(human_label, machine_label):
 	human_label, machine_label = zip(*((human, machine) for human, machine in zip(human_label, machine_label) if not pd.isna(human) and not pd.isna(machine)))
-	return sklearn.metrics.cluster.adjusted_rand_score(human_label, machine_label)
+	return skclu.adjusted_rand_score(human_label, machine_label)
 
 
 

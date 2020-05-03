@@ -17,5 +17,7 @@ AddType text/html .py
   Order deny,allow
   Allow from all
 </Directory>
+
+WSGIApplicationGroup %{GLOBAL}
 EOF
 systemctl restart httpd
