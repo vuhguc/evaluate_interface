@@ -1,0 +1,7 @@
+<config>
+  <local_or_server>local</local_or_server>
+  <app_name>evaluate_interface</app_name>
+  <main_rel_path>main.py</main_rel_path>
+  <static_rel_path>static</static_rel_path>
+  <httpd_conf_rel_dir>/etc/httpd/conf.d</httpd_conf_rel_dir>
+</config>

@@ -1,4 +1,4 @@
-$def with (status_message, evaluation_function_names, evaluation_table, evaluation_row_tooltips, visualization_paths, filenames, filename)
+$def with (status_message, evaluation_function_names, evaluation_table, evaluation_row_tooltips, visualization_urls, filenames, filename)
 
 $def render_table(table, row_tooltips):
     <table class="table table-responsive table-bordered">
@@ -65,13 +65,13 @@ $:global_render.header("Evaluate Clusterings", "Evaluate clusterings given in th
         <select class="form-control" onchange="changeImage()" id="visualizationDropdown">
           $for idx in range(len(evaluation_function_names)):
               $if evaluation_function_names[idx] == 'Adjusted Rand Index':
-                  <option value="evaluate_interface/$visualization_paths[idx]" selected>$evaluation_function_names[idx]</option>
+                  <option value="$visualization_urls[idx]" selected>$evaluation_function_names[idx]</option>
               $else:
-                  <option value="evaluate_interface/$visualization_paths[idx]">$evaluation_function_names[idx]</option>
+                  <option value="$visualization_urls[idx]">$evaluation_function_names[idx]</option>
         </select>
       </div>
       $if evaluation_function_names is not None:
-          <img src="evaluate_interface/$visualization_paths[0]" class="img-fluid" alt="$evaluation_function_names[0]" id="visualizationImage">
+          <img src="" class="img-fluid" alt="Visualization" id="visualizationImage">
     </div>
   </div>
 </div>
@@ -84,4 +84,6 @@ $$(document).ready(function(){
 function changeImage() {
   document.getElementById("visualizationImage").src = document.getElementById("visualizationDropdown").value;
 }
+
+document.getElementById("visualizationImage").src = document.getElementById("visualizationDropdown").value;
 </script>
